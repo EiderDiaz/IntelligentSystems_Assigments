@@ -13,8 +13,7 @@ class Bank:
         self.name = name
         self.clients = []
         self.unnamedClients = 0
-    def report(self, name):
-        for
+
     def findClient(self, client = None):
         if not client:
             return None
@@ -90,25 +89,25 @@ def cancel(bank, client):
         bank.clients.remove(account)
         return
 def report(bank):
-    for clients in bank.clients:
-        arrayformat[] = s
+    arrayformat =""
+    totalBankBalance =0
+    for  client in bank.clients:
+        arrayformat = arrayformat +"""| {0}            | $   {1}  |""".format(client[0],client[1]) +"""\n\t     """
+        totalBankBalance += client[1]
+
+
     return """
-            ----------------------------------
-            | * {0} bank savings accounts * |
-            ----------------------------------
-            | Client             | Balance   |
-            ----------------------------------
-            | {1}                 | $   {2}|
-            | {3}                | $     {4}  |
-            | {5}             | $     {6}  |
-            | {7}                | $   {8}  |
-            | {9}             | $   {10} |
-            | {11}              | $     {12}  |
-            ----------------------------------
-            |              Total | $   {13}  |
-            ----------------------------------
-         """.format(bank)
-        return
+             ----------------------------------
+             | * {0} bank savings accounts * |
+             ----------------------------------
+             | Client             | Balance   |
+             ----------------------------------
+             {1}
+             ----------------------------------
+             |              Total | $   {2}  |
+             ----------------------------------
+           """.format(bank.name,arrayformat,totalBankBalance)
+    return arrayformat
 def cancel_clients(bank, clients):
     for client in clients:
         cancel(bank, client)
@@ -147,7 +146,6 @@ def main():
     # consult the balance for Lupita
     consult(bbva, 'lupita')
     # consult the balance for Juan
-    import pdb; pdb.set_trace()
     consult(bbva, 'juan')
     # withdraw 50 pesos from Pedro's account
     withdraw(b1, 'pedro', 50)
@@ -161,11 +159,13 @@ def main():
     print(bbva.name)
     print(bbva.clients)
     # cancel the unnamed client2 account
-    cancel(b1, 'client2')
-    cancel(bbva, 'client2')
+    #cancel(b1, 'client2')
+    #cancel(bbva, 'client2')
+    import pdb; pdb.set_trace()
 #    print(bbva)
 #    # generate a full report for BBVA bank ... all clients
-#    report(bbva)
+    print(report(bbva))
+    print(bbva.clients)
 
 #    # generate a report of clients that have less than 400 pesos at BBVA bank
 #    report(bbva, 400)
@@ -175,7 +175,9 @@ def main():
 #    add_clients(bbva, [450,('hugo',3000),1500,('isabel',750),('juan',250)])
 #    report(bbva)
     # cancel the accounts of a list of clients
+    print(report(b1))
     cancel_clients(bbva,['juan','roberto','isabel'])
+
 #    report(bbva)
 #    # report a list of specific clients
 #    report(bbva,clients=['juan','hugo','client1'])
