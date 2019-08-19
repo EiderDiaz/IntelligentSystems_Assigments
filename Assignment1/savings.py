@@ -5,7 +5,7 @@
 
    Date: August 19th, 2019
    Authors: A01137566 Campus: Monterrey
-            A0... ... Campus: ...
+            A01270966 Campus: Monterrey
 """
 
 class Bank:
