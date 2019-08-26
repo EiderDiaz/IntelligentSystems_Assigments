@@ -172,9 +172,11 @@ class ReflexHunter(Agent):
 
 def program(percepts):
     '''Returns an action based on it's percepts'''
-    print("AGENT PERFORMANCE: " + str(charlie.performance))
-    print("INVENTORY: " + str(charlie.holding))
-
+    print("Agent Location: " + str(charlie.location))
+    print("Agent Tools: " + str(charlie.holding))
+    printMatrix(percepts)
+    print("")
+    print("Agent performance: " + str(charlie.performance))
     actionTaken = False
     for p in percepts:
         # Grab actions for when agent is in same location
@@ -217,6 +219,43 @@ def program(percepts):
     if not actionTaken:
         return 'moveRandom'
 
+def printMatrix(percepts):
+    for i in range(0, 8):
+        print("")
+        for j in range(0, 8):
+            if (i == 0 and j == 0) or (i == 7 and j == 7):
+                print("\\", end=" ")
+
+            elif (i == 0 and j == 7) or (i == 7 and j == 0):
+                print("/", end=" ")
+
+            elif (i == 0 or i == 7):
+                print("".join(str(j)), end=" ")
+
+            elif (j == 0 or j == 7):
+                print("".join(str(i)), end=" ")
+
+            else:
+                #Check percepts, print if matches location
+                printed = False
+                for p in percepts:
+                    if p.location == [i,j]:
+                        if isinstance(p, Treasure1):
+                            printed = True
+                            print("T", end=" ")
+                        elif isinstance(p, Treasure2):
+                            printed = True
+                            print("t", end=" ")
+                        elif isinstance(p, DisposTool):
+                            printed = True
+                            print("h", end=" ")
+                        elif isinstance(p, ReuseTool):
+                            printed = True
+                            print("H", end=" ")
+
+                if not printed:
+                    print("-", end=" ")
+
 
 def inInventory(tool):
     for hold in charlie.holding:
@@ -251,4 +290,4 @@ island.add_thing(reusable2, [1,3])
 island.add_thing(treasure2, [5,4])
 island.add_thing(dispos, [1,2])
 
-island.run(20)
+island.run(200)
