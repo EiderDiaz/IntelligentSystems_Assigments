@@ -47,8 +47,7 @@ class Island(Environment):
 
     def execute_action(self, agent, action):
         '''changes the state of the environment based on what the agent does.'''
-        # TODO: move sctions do not make sense right now.
-        # Should call method on Agent, update performance, possible check for walls and boundaries
+        # TODO: check for walls and boundaries
         if action == 'moveRandom':
             direction = randint(1, 4)
             print("Hunter: Moved random")
@@ -63,53 +62,60 @@ class Island(Environment):
 
         if action == 'moveRight':
             if agent.location[0] < 6:
+                wallswalls = self.list_things_at([agent.location[0]+1, agent.location[1]], tclass=Wall)
                 agent.moveRight()
+                agent.performance -= 1
             else:
-                pass
+                agent.performance -= 5
         elif action == 'moveLeft':
             if agent.location[0] > 1:
                 agent.moveLeft()
+                agent.performance -= 1
             else:
-                pass
+                agent.performance -= 5
         elif action == 'MoveUp':
             if agent.location[1] > 1:
                 agent.moveUp()
+                agent.performance -= 1
             else:
-                pass
+                agent.performance -= 5
         elif action == 'moveDown':
             if agent.location[1] < 6:
                 agent.moveDown()
+                agent.performance -= 1
             else:
-                pass
+                agent.performance -= 5
         elif action == "Greuse":
             items = self.list_things_at(agent.location, tclass=ReuseTool)
             if len(items) != 0:
-                if agent.greuse(items[0]):  # Have the dog pick eat the first item
-                    self.delete_thing(items[0])  # Delete it from the Park after.
+                if agent.greuse(items[0]):  #
+                    self.delete_thing(items[0])  #
+                    agent.holding.append('H')
         elif action == "Gdispos":
             agent.gdispos()
             items = self.list_things_at(agent.location, tclass=DisposTool)
             if len(items) != 0:
-                if agent.gdispos(items[0]):  # Have the dog drink the first item
-                    self.delete_thing(items[0])  # Delete it from the Park after.
+                if agent.gdispos(items[0]):  #
+                    self.delete_thing(items[0])  # D
+                    agent.holding.append('h')
         elif action == "GTreasure1":
             items = self.list_things_at(agent.location, tclass=Treasure1)
             if len(items) != 0:
                 if agent.gTreasure1(items[0]):  # Grab Treasure 1
                     # TODO: add to performance
+                    agent.performance += 20
                     self.delete_thing(items[0])  # Delete it from the Island after.
         elif action == "GTreasure2":
             items = self.list_things_at(agent.location, tclass=Treasure2)
             if len(items) != 0:
                 if agent.gTreasure2(items[0]):  # Grab Treasure2
-                    # TODO: add to performance
-                    # TODO: delete disposable tool from inventory
+                    agent.performance += 40
+                    agent.holding.remove('h')
                     self.delete_thing(items[0])  # Delete it from the Island after.
         elif action == "NoOp":
             pass
 
     def is_done(self):
-        # TODO: Implement when agent is done
         '''By default, we're done when we can't find a live agent,
         but to prevent killing our cute dog, we will or it with when there is no more food or water'''
         no_edibles = not any(isinstance(thing, Treasure1) or isinstance(thing, DisposTool) or isinstance(thing, ReuseTool) or isinstance(thing, Treasure2) for thing in self.things)
@@ -167,6 +173,7 @@ class ReflexHunter(Agent):
 def program(percepts):
     '''Returns an action based on it's percepts'''
     print("AGENT PERFORMANCE: " + str(charlie.performance))
+    print("INVENTORY: " + str(charlie.holding))
 
     actionTaken = False
     for p in percepts:
@@ -212,7 +219,10 @@ def program(percepts):
 
 
 def inInventory(tool):
-    return True
+    for hold in charlie.holding:
+        if hold == tool:
+            return True
+    return False
 
 def getDirection(origin, goal):
     if origin[0] < goal[0]:
@@ -226,14 +236,18 @@ def getDirection(origin, goal):
 
 island = Island()
 charlie = ReflexHunter(program)
-charlie.performance = 50
 treasure1 = Treasure1()
 treasure2 = Treasure2()
 dispos = DisposTool()
 reusable = ReuseTool()
+reusable2 = ReuseTool()
+wall = Wall()
+
 island.add_thing(charlie, [1,1])
+charlie.performance = 50
 island.add_thing(treasure1, [3,4])
 island.add_thing(reusable, [6,6])
+island.add_thing(reusable2, [1,3])
 island.add_thing(treasure2, [5,4])
 island.add_thing(dispos, [1,2])
 
