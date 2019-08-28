@@ -42,7 +42,6 @@ class Island(Environment):
             things = self.list_things_at(location)
             for thing in things:
                 percepts.append(thing)
-        print(percepts)
         return percepts
 
     def execute_action(self, agent, action):
@@ -61,27 +60,34 @@ class Island(Environment):
                 action = 'moveDown'
 
         if action == 'moveRight':
-            if agent.location[0] < 6:
-                wallswalls = self.list_things_at([agent.location[0]+1, agent.location[1]], tclass=Wall)
-                agent.moveRight()
+            if agent.location[1] < 6:
+                walls = self.list_things_at([agent.location[0], agent.location[1]+1], tclass=Wall)
+                if len(walls) == 0:
+                    agent.moveRight()
                 agent.performance -= 1
             else:
                 agent.performance -= 5
         elif action == 'moveLeft':
-            if agent.location[0] > 1:
-                agent.moveLeft()
+            if agent.location[1] > 1:
+                walls = self.list_things_at([agent.location[0], agent.location[1] - 1], tclass=Wall)
+                if len(walls) == 0:
+                    agent.moveLeft()
                 agent.performance -= 1
             else:
                 agent.performance -= 5
-        elif action == 'MoveUp':
-            if agent.location[1] > 1:
-                agent.moveUp()
+        elif action == 'moveUp':
+            if agent.location[0] > 1:
+                walls = self.list_things_at([agent.location[0]-1, agent.location[1]], tclass=Wall)
+                if len(walls) == 0:
+                    agent.moveUp()
                 agent.performance -= 1
             else:
                 agent.performance -= 5
         elif action == 'moveDown':
-            if agent.location[1] < 6:
-                agent.moveDown()
+            if agent.location[0] < 6:
+                walls = self.list_things_at([agent.location[0] + 1, agent.location[1]], tclass=Wall)
+                if len(walls) == 0:
+                    agent.moveDown()
                 agent.performance -= 1
             else:
                 agent.performance -= 5
@@ -126,19 +132,19 @@ class Island(Environment):
 class ReflexHunter(Agent):
 
     def moveRight(self):
-        self.location[0] += 1
+        self.location[1] += 1
         print("Hunter: Moved Right to {}.".format(self.location))
 
     def moveLeft(self):
-        self.location[0] -= 1
+        self.location[1] -= 1
         print("Hunter: Moved Left to {}.".format(self.location))
 
     def moveUp(self):
-        self.location[1] -= 1
+        self.location[0] -= 1
         print("Hunter: Moved Up to {}.".format(self.location))
 
     def moveDown(self):
-        self.location[1] += 1
+        self.location[0] += 1
         print("Hunter: Moved Down to {}.".format(self.location))
 
     def greuse(self, thing):
@@ -252,7 +258,9 @@ def printMatrix(percepts):
                         elif isinstance(p, ReuseTool):
                             printed = True
                             print("H", end=" ")
-
+                        elif isinstance(p, Wall):
+                            printed = True
+                            print("X", end=" ")
                 if not printed:
                     print("-", end=" ")
 
@@ -264,11 +272,11 @@ def inInventory(tool):
     return False
 
 def getDirection(origin, goal):
-    if origin[0] < goal[0]:
+    if origin[1] < goal[1]:
         return 'moveRight'
-    elif origin[0] > goal[0]:
+    elif origin[1] > goal[1]:
         return 'moveLeft'
-    elif origin [1] > goal[1]:
+    elif origin[0] > goal[0]:
         return 'moveUp'
     else:
         return 'moveDown'
@@ -282,12 +290,12 @@ reusable = ReuseTool()
 reusable2 = ReuseTool()
 wall = Wall()
 
-island.add_thing(charlie, [1,1])
-charlie.performance = 50
+island.add_thing(dispos, [1,1])
 island.add_thing(treasure1, [3,4])
 island.add_thing(reusable, [6,6])
-island.add_thing(reusable2, [1,3])
+island.add_thing(charlie, [3,1])
 island.add_thing(treasure2, [5,4])
-island.add_thing(dispos, [1,2])
+island.add_thing(wall, [2,1])
 
-island.run(200)
+charlie.performance = 50
+island.run(6)
