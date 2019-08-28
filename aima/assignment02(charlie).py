@@ -130,6 +130,17 @@ class Island(Environment):
 
 
 class ReflexHunter(Agent):
+    def __init__(self, program=None):  # default state of the agent
+        self.alive = True
+        self.bump = False
+        self.type = 'simple_reflex'
+        self.holding = []
+        self.performance = 50
+        if program is None:
+            def program(percept):
+                return eval(input('Percept={}; action? '.format(percept)))
+        # assert isinstance(program, collections.Callable)
+        self.program = program
 
     def moveRight(self):
         self.location[1] += 1
@@ -175,14 +186,30 @@ class ReflexHunter(Agent):
             return True
         return False
 
+class ModelBasedHunter(ReflexHunter):
+    def __init__(self, program=None):  # default state of the agent
+        self.alive = True
+        self.bump = False
+        self.holding = []
+        self.performance = 50
+        self.type = "modelbased"
+        self.seen = [[1,2], [1,3]]
+        if program is None:
+            def program(percept):
+                return eval(input('Percept={}; action? '.format(percept)))
+        # assert isinstance(program, collections.Callable)
+        self.program = program
 
-def program(percepts):
+def program(percepts, agent):
     '''Returns an action based on it's percepts'''
-    print("Agent Location: " + str(charlie.location))
+    print("Agent Location: " + str(agent.location))
     print("Agent Tools: " + str(charlie.holding))
     printMatrix(percepts)
     print("")
     print("Agent performance: " + str(charlie.performance))
+    if charlie.type == 'modelbased':
+        print("INTERNAL STATE:")
+        print(charlie.seen)
     actionTaken = False
     for p in percepts:
         # Grab actions for when agent is in same location
@@ -282,7 +309,9 @@ def getDirection(origin, goal):
         return 'moveDown'
 
 island = Island()
-charlie = ReflexHunter(program)
+# charlie = ReflexHunter(program)
+charlie = ModelBasedHunter(program)
+
 treasure1 = Treasure1()
 treasure2 = Treasure2()
 dispos = DisposTool()
