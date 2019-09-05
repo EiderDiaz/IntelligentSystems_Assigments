@@ -1,4 +1,78 @@
-"""Implement Agents and Environments (Chapters 1-2).nmjhjnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn  bbbbbWhat counts as a percept or action
+"""Implement Agents and Environments (Chapters 1-2).
+
+The class hierarchies are as follows:
+
+Thing ## A physical object that can exist in an environment
+    Agent
+        Wumpus
+    Dirt
+    Wall
+    ...
+
+Environment ## An environment holds objects, runs simulations
+    XYEnvironment
+        VacuumEnvironment
+        WumpusEnvironment
+
+An agent program is a callable instance, taking percepts and choosing actions
+    SimpleReflexAgentProgram
+    ...
+
+EnvGUI ## A window with a graphical representation of the Environment
+
+EnvToolbar ## contains buttons for controlling EnvGUI
+
+EnvCanvas ## Canvas to display the environment of an EnvGUI
+
+"""
+
+# TO DO:
+# Implement grabbing correctly.
+# When an object is grabbed, does it still have a location?
+# What if it is released?
+# What if the grabbed or the grabber is deleted?
+# What if the grabber moves?
+#
+# Speed control in GUI does not have any effect -- fix it.
+
+from grid import distance2
+from statistics import mean
+
+import random
+import copy
+import collections
+
+# ______________________________________________________________________________
+
+
+class Thing(object):
+
+    """This represents any physical object that can appear in an Environment.
+    You subclass Thing to get the things you want.  Each thing can have a
+    .__name__  slot (used for output only)."""
+
+    def __repr__(self):
+        return '<{}>'.format(getattr(self, '__name__', self.__class__.__name__))
+
+    def is_alive(self):
+        "Things that are 'alive' should return true."
+        return hasattr(self, 'alive') and self.alive
+
+    def show_state(self):
+        "Display the agent's internal state.  Subclasses should override."
+        print("I don't know how to show_state.")
+
+    def display(self, canvas, x, y, width, height):
+        # Do we need this?
+        "Display an image of this Thing on the canvas."
+        pass
+
+
+class Agent(Thing):
+
+    """An Agent is a subclass of Thing with one required slot,
+    .program, which should hold a function that takes one argument, the
+    percept, and returns an action. (What counts as a percept or action
     will depend on the specific environment in which the agent exists.)
     Note that 'program' is a slot, not a method.  If it were a method,
     then the program could 'cheat' and look at aspects of the agent.
